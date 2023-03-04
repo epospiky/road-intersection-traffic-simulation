@@ -1,20 +1,8 @@
 package road_traffic_simulation;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 public class GUI {
 	public GUI() {
@@ -61,14 +49,6 @@ public class GUI {
 		co2_unit.setBounds(800, 180, 50, 30);
 		
 		
-		JButton add =  new JButton("Add");
-		//Dimension size = add.getPreferredSize();	
-		add.setBounds(50, 700, 80, 30);
-		JButton cancel =  new JButton("Cancel");
-		cancel.setBounds(300, 700, 80, 30);
-		JButton exit =  new JButton("Exit");
-		exit.addActionListener((event)->System.exit(0));
-		exit.setBounds(900, 700, 80, 30);
 		
 		JPanel panel = new JPanel(new GridLayout(0,1));
 		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -80,9 +60,6 @@ public class GUI {
 		panel.add(co2_l);
 		panel.add(co2Field);
 		panel.add(co2_unit);
-		panel.add(add);
-		panel.add(cancel);
-		panel.add(exit);
 		
 		frame.setTitle("Road Intersection Traffic Similation");
 		frame.add(panel, BorderLayout.CENTER);
