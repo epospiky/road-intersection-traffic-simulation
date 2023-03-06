@@ -1,28 +1,50 @@
 package road_traffic_simulation;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.GridLayout;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
-public class GUI {
-	public GUI() {
-		JFrame frame = new JFrame();
-		//implementing GUI for Vehicle display section
-		JLabel vehicle_l = new JLabel("Vehicles", SwingConstants.CENTER);
-		vehicle_l.setBounds(10, 0, 440, 30);
-		String[][] v_strings = {
-		         { "L23467", "Truck", "10", "Left", "12", "12", "Waiting", "S1" },
-		         { "L23467", "Car", "3", "Straight", "4", "5", "Waiting", "S2" },
-		         { "L23467", "Bus", "8", "Right", "14", "10", "Crossed", "S1" }
-		      };
-		String[] v_header = {"Vehicle", "Type", "Crossing Time", "Direction", "Length", "Emission", "Status", "Segment"};
-	
-		JTable vehicles_t = new JTable(v_strings, v_header);
-		vehicles_t.setBounds(0, 0, 440,180);
-		JScrollPane vehicle_scroll = new JScrollPane();
-		vehicle_scroll.setBounds(10, 30, 450, 200);
-		vehicle_scroll.setViewportView(vehicles_t);
-		
+public class GUI extends JFrame {
+	private JPanel panel;
+    private JTable vehicle_table;
+    private JLabel vehicle_label;
+
+    public GUI() {
+        setTitle("CSV Reader");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1200, 800);
+
+        String FileName = "vehicles.csv";
+        String line = "";
+        String splitBy = ",";
+        List<String[]> data = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(FileName))) {
+            while ((line = br.readLine()) != null) {
+                String[] rowData = line.split(splitBy);
+                data.add(rowData);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //implementing GUI for Vehicle display section
+        String[] headers = {"Vehicle", "Type", "Crossing", "Direction", "Length", "Emission", "Status", "Segment"};
+        vehicle_label = new JLabel("Vehicles", SwingConstants.CENTER);
+		vehicle_label.setBounds(10, 0, 450, 30);
+        vehicle_table = new JTable(data.toArray(new String[data.size()][0]), headers);
+        vehicle_table.setBounds(10, 0, 440, 180);
+
+        JScrollPane vehicle_scrollPane = new JScrollPane(vehicle_table);
+        vehicle_scrollPane.setBounds(10, 30, 450, 200);
+        panel = new JPanel(new GridLayout(0,1));
+		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		panel.setLayout(null);
+        panel.add(vehicle_label);
+        panel.add(vehicle_scrollPane);
+        
 		//implementing GUI for Statistics
 		JLabel statistics_l = new JLabel("Statistics", SwingConstants.CENTER);
 		statistics_l.setBounds(600, 0, 350, 30);
@@ -47,30 +69,21 @@ public class GUI {
 		co2Field.setBounds(750, 180, 50, 30);
 		JLabel co2_unit = new JLabel("kg");
 		co2_unit.setBounds(800, 180, 50, 30);
-		
-		
-		
-		JPanel panel = new JPanel(new GridLayout(0,1));
-		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		panel.setLayout(null);
-		panel.add(vehicle_l);
-		panel.add(vehicle_scroll);
+        
+        
 		panel.add(statistics_l);
 		panel.add(statistics_scroll);
 		panel.add(co2_l);
 		panel.add(co2Field);
 		panel.add(co2_unit);
-		
-		frame.setTitle("Road Intersection Traffic Similation");
-		frame.add(panel, BorderLayout.CENTER);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setResizable(false);
-		frame.setSize(1200, 800);
-		frame.setVisible(true);
-	}
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		new GUI();
-	}
+        add(panel);
+        
+
+        setVisible(true);
+    }
+
+	/*
+	 * public static void main(String[] args) { new GUI(); }
+	 */
 
 }
