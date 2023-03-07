@@ -1,3 +1,4 @@
 L23467,Truck,10,Left,12,12,waiting,S1
 A78646,Car,3,Straight,4,5,Waiting,S2
 S56438,Bus,8,Right,14,10,Crossed,S1
+S54468,Bus,7,Right,13,8,waiting,S2
