@@ -208,7 +208,7 @@ public class GUI extends JFrame {
          Panel.add(statisticsLabel);
          Panel.add(statisticsScroll);
          //Adding Add vehicle table to panel
-         totalEmissionLabel = new JLabel("hgdhkjhl;jblgf tifhjhmyhg");
+         totalEmissionLabel = new JLabel("");
          totalEmissionLabel.setBounds(30, 500, 100, 20);
          Panel.add(totalEmissionLabel);
          
