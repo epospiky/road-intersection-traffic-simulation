@@ -1,18 +1,11 @@
-package advanced;
-import javax.swing.*;
-import java.awt.*;
+package road_traffic_simulation;
 
-public class AddVehicle extends JFrame {
-	private static final long serialVersionUID = 1L;
-	private JLabel segmentLabel, idLabel, typeLabel, crossingTimeLabel, directionLabel, crossingStatusLabel, lengthLabel, emissionRateLabel;
-    private JComboBox<String> typeComboBox, directionComboBox, segmentComboBox,statusComboBox;
-    private JTextField idTextField, crossingTimeTextField, lengthTextField, emissionRateTextField;
-    private JButton addButton, CancelButton;
+
+public class AddVehicle{
+
 
     public AddVehicle() {
-        setTitle("Vehicle Management System");
-        setSize(800, 400);
-        segmentLabel = new JLabel("Segment:");
+/*        segmentLabel = new JLabel("Segment:");
         idLabel = new JLabel("ID:");
         typeLabel = new JLabel("Type:");
         crossingTimeLabel = new JLabel("Crossing Time:");
@@ -93,12 +86,9 @@ public class AddVehicle extends JFrame {
         idTextField.setPreferredSize(new Dimension(50, 25));
         crossingTimeTextField.setPreferredSize(new Dimension(50, 25));
         lengthTextField.setPreferredSize(new Dimension(50, 25));
-        emissionRateTextField.setPreferredSize(new Dimension(50, 25));
-      
+  emissionRateTextField.setPreferredSize(new Dimension(50, 25));
+           */ 
     }
 
-    public static void main(String[] args) {
-        AddVehicle system = new AddVehicle();
-        system.setVisible(true);
-    }
+
 }
