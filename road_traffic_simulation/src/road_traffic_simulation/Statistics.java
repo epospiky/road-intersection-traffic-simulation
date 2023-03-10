@@ -54,7 +54,7 @@ public class Statistics {
         List<Statistics> statisticsList = new ArrayList<>();
         Map<String, Integer> segmentCounts = new HashMap<>(); // segment counts
         
-        // Iterating over the segments and create a Statistics object for each segment
+        // Iterating over the segments to create Statistics object for each segment
         for (int i = 1; i <= 4; i++) {
             int totalWaitingTime = 0;
             int averageCrossingTime = 0;
@@ -62,7 +62,7 @@ public class Statistics {
             try {
                 for (Vehicle vehicle : vehicles) {
                     if (vehicle.getSegmentNumber().equals("S" + i)) {
-                        // Increment segment count
+                        // Incrementing segment count
                         String segmentNumber = vehicle.getSegmentNumber();
                         segmentCounts.put(segmentNumber, segmentCounts.getOrDefault(segmentNumber, 0) + 1);
 
@@ -81,6 +81,8 @@ public class Statistics {
 
             Statistics statistics = new Statistics(i, totalWaitingTime, totalWaitingLength, averageCrossingTime);
             statisticsList.add(statistics);
+            
+            
         }
 
         return statisticsList;

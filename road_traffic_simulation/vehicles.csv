@@ -4,3 +4,4 @@ S56438,Bus,8,Right,14,10,Waiting,S1
 S54468,Bus,7,Right,13,8,Crossed,S2
 S54436,Car,9,Left,11,10,Crossed,S2
 S54675,Truck,6,Straight,11,7,Crossed,S4
+D34523,Car,12,Right,11,13,Crossed,S3
