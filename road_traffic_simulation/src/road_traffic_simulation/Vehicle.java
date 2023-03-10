@@ -13,16 +13,41 @@ public class Vehicle {
     private String segmentNumber;
     
     public Vehicle(String plateNumber, String vehicleType, int crossingTime, 
-                   String direction, double waitingLength, int co2Emission, 
-                   String vehicleStatus, String segmentNumber) {
-        this.plateNumber = plateNumber;
-        this.vehicleType = vehicleType;
-        this.crossingTime = crossingTime;
-        this.direction = direction;
-        this.waitingLength = waitingLength;
-        this.co2Emission = co2Emission;
-        this.vehicleStatus = vehicleStatus;
-        this.segmentNumber = segmentNumber;
+            String direction, double waitingLength, int co2Emission, 
+            String vehicleStatus, String segmentNumber) throws IllegalArgumentException {
+			 if (plateNumber == null || plateNumber.isEmpty()) {
+			     throw new IllegalArgumentException("Plate number cannot be null or empty");
+			 }
+			 if (vehicleType == null || vehicleType.isEmpty()) {
+			     throw new IllegalArgumentException("Vehicle type cannot be null or empty");
+			 }
+			 if (crossingTime <= 0) {
+			     throw new IllegalArgumentException("Crossing time cannot be negative or zero");
+			 }
+			 if (direction == null || direction.isEmpty()) {
+			     throw new IllegalArgumentException("Direction cannot be null or empty");
+			 }
+			 if (waitingLength < 0) {
+			     throw new IllegalArgumentException("Waiting length cannot be negative");
+			 }
+			 if (co2Emission < 0) {
+			     throw new IllegalArgumentException("CO2 emission cannot be negative");
+			 }
+			 if (vehicleStatus == null || vehicleStatus.isEmpty()) {
+			     throw new IllegalArgumentException("Vehicle status cannot be null or empty");
+			 }
+			 if (segmentNumber == null || segmentNumber.isEmpty()) {
+			     throw new IllegalArgumentException("Segment number cannot be null or empty");
+			 }
+			 
+			 this.plateNumber = plateNumber;
+			 this.vehicleType = vehicleType;
+			 this.crossingTime = crossingTime;
+			 this.direction = direction;
+			 this.waitingLength = waitingLength;
+			 this.co2Emission = co2Emission;
+			 this.vehicleStatus = vehicleStatus;
+			 this.segmentNumber = segmentNumber;
     }
     
     // Getters and setters for all attributes
