@@ -7,310 +7,357 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
-public class GUI extends JFrame {
-	private List<Vehicle> vehicles;
-	private List<Emission> emission;
-	private List<Vehicle_manager> vehicle_manager;
-	private List<Statistics> statistics;
-	private JLabel totalEmissionLabel;
-	
-	//private JPanel panel;
-    private JTable vehiclesTable;
-    private JTable statisticsTable;
-    private JTable addVehicleTable;
-    private JTextField emissionField;
-    private JLabel vehicleLabel;
-	private JLabel addVehicleLabel;
-    //private JLabel vehicle_label;
+public class GUI implements Observer  {
+    JFrame Jframe;
+    JPanel Jpanel;
+    private DefaultTableModel tableModel,phaseModel, statsModel;
+    private JTable vehicleTable, phaseTable, statisticsTable;
+    JTable addVehicleTable;
+    private JButton add, exit, cancel;
+    Collection<Vehicle> vehicleList;
+    JTextField emissionField;
 
     public GUI() {
-
-    	try {
-			this.vehicles = readVehiclesFromCsv("vehicles.csv");
-			
-	        // Creating vehicles table
-	        Object[][] vehiclesData = new Object[vehicles.size()][8];
-	        for (int i = 0; i < vehicles.size(); i++) {
-	            Vehicle vehicle = vehicles.get(i);
-	            vehiclesData[i][0] = vehicle.getPlateNumber();
-	            vehiclesData[i][1] = vehicle.getVehicleType();
-	            vehiclesData[i][2] = vehicle.getCrossingTime();
-	            vehiclesData[i][3] = vehicle.getDirection();
-	            vehiclesData[i][4] = vehicle.getWaitingLength();
-	            vehiclesData[i][5] = vehicle.getCo2Emission();
-	            vehiclesData[i][6] = vehicle.getVehicleStatus();
-	            vehiclesData[i][7] = vehicle.getSegmentNumber();
-	        }
-		
-    	
-    	
-    	 String[] vehiclesColumnNames = {"Vehicle number", "Type", "Crossing time", "Direction", "Length",
-                 "Emission", "Status", "Segment" };
-         vehicleLabel = new JLabel("Vehicles", SwingConstants.CENTER);
- 		 vehicleLabel.setBounds(10, 0, 450, 30);
-         vehiclesTable = new JTable(vehiclesData, vehiclesColumnNames);
-         vehiclesTable.setBounds(10, 0, 440, 180);
-         vehiclesTable.setDefaultEditor(Object.class, null);
-         JScrollPane vehicleScroll = new JScrollPane(vehiclesTable);
-         //vehicleScroll.setViewportView();
-         vehicleScroll.setBounds(10, 30, 450, 200);
-
-         // Creating statistics table
-         Object[][] statisticsData = new Object[vehicles.size()][4];
-         String[] statisticsColumnNames = { "Segment", "Waiting time", "Waiting length","Crossing time" };
- 		 JLabel statisticsLabel = new JLabel("Statistics", SwingConstants.CENTER);
- 		 statisticsLabel.setBounds(600, 0, 350, 30);
-         this.statisticsTable = new JTable(statisticsData, statisticsColumnNames);
-         statisticsTable.setBounds(500, 0, 300, 150);
-         statisticsTable.setDefaultEditor(Object.class, null);
-         JScrollPane statisticsScroll = new JScrollPane(); 
-         statisticsScroll.setBounds(600, 30, 350, 100);
-         statisticsScroll.setViewportView(statisticsTable);
-         
-         
-         //Creating co2 field
-         Emission emi = new Emission(0,0);
-         JLabel co2_l = new JLabel("CO2", SwingConstants.CENTER); 
-         co2_l.setBounds(750,150, 50, 30);
-         double totalCo2Emission = emi.getTotalCo2Emission();
-         //System.out.println(totalCo2Emission);
-         this.emissionField = new JTextField();
-         emissionField.setBounds(750,180, 50, 30);
-         emissionField.setText(Double.toString(totalCo2Emission));
-         JLabel co2_unit = new JLabel("kg"); 
-         co2_unit.setBounds(800, 180, 50, 30);
-         co2_l.setBounds(750,150, 50, 30); 
-         co2_unit.setBounds(800,180, 50, 30);
-         
-         String[] add_vehicle_headings = {"Vehicle", "Type", "Crossing Time", "Direction", "Length", "Emission", "Status", "Segment"};
-         Object[][] add_vehicle_data = {{"", "", "", "", "", "", "", ""}};         
-         DefaultTableModel addVehicleModel = new DefaultTableModel(add_vehicle_data, add_vehicle_headings) {
-             @Override
-             public Class<?> getColumnClass(int columnIndex) {
-                 if (columnIndex == 1) {
-                     return JComboBox.class; // return JComboBox class for the Type column
-                 }
-                 else if(columnIndex == 3){
-                	 return JComboBox.class; // return JComboBox class for the Type column
-                 }
-                 else if(columnIndex == 6){
-                	 return JComboBox.class; // return JComboBox class for the Type column
-                 }
-                 else if(columnIndex == 7){
-                	 return JComboBox.class; // return JComboBox class for the Type column
-                 }
-                 else {
-                     return String.class; // return String class for all other columns
-                 }
-             }  
-         };
-
-
-   
-         //Creating addVehicle Table
-         this.addVehicleLabel = new JLabel("Add Vehicles");
-         addVehicleLabel.setBounds(10, 320, 300, 30);
-
-         this.addVehicleTable = new  JTable(addVehicleModel);
-         addVehicleTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox<>(new String[]{"Truck", "Car", "Bus"})));
-         addVehicleTable.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(new JComboBox<>(new String[]{"Straigth", "Right", "Left"})));
-         addVehicleTable.getColumnModel().getColumn(6).setCellEditor(new DefaultCellEditor(new JComboBox<>(new String[]{"Waiting", "Crossed"})));
-         addVehicleTable.getColumnModel().getColumn(7).setCellEditor(new DefaultCellEditor(new JComboBox<>(new String[]{"S1", "S2", "S3", "S4"})));
-         JScrollPane addVehicleScroll = new JScrollPane();
-         addVehicleScroll.setBounds(10,350, 550, 50);
-         addVehicleScroll.setViewportView(addVehicleTable);
-         
-         JButton add =  new JButton("Add");
- 		//Dimension size = add.getPreferredSize();	
- 		add.setBounds(50, 570, 80, 30);
- 		add.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Get values from table
-                String vehicle = (String) addVehicleModel.getValueAt(0, 0);
-                String type = (String) addVehicleModel.getValueAt(0, 1);
-                String crossingTime = (String) addVehicleModel.getValueAt(0, 2);
-                String direction = (String) addVehicleModel.getValueAt(0, 3);
-                String crossingLength = (String) addVehicleModel.getValueAt(0, 4);
-                String emission = (String) addVehicleModel.getValueAt(0, 5);
-                String status = (String) addVehicleModel.getValueAt(0, 6);
-                String segmentNumber = (String) addVehicleModel.getValueAt(0, 7);
-
-                // Format values as a string
-
-                // Write record to file
-                if(!vehicle.isEmpty()&&!type.isEmpty()&&!crossingTime.isEmpty()&&!direction.isEmpty()&&!crossingLength.isEmpty()&&!emission.isEmpty()&&!status.isEmpty()&&!segmentNumber.isEmpty()) {
-                    String record = vehicle + "," + type + "," + crossingTime + "," + direction + ","
-                            + crossingLength + "," + emission + "," + status + "," + segmentNumber;
-
-                    try {
-                        FileWriter writer = new FileWriter("vehicles.csv", true); // true means append to existing file
-                        writer.write("\n"); // Add newline character
-                        writer.write(record);
-                        writer.close();
-                        
-                        JOptionPane.showMessageDialog(GUI.this, "Record added successfully!");
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(GUI.this, "Error writing record to file!");
-                        ex.printStackTrace();
-                    }
-                }else {
-                	JOptionPane.showMessageDialog(GUI.this, "Please Enter All fields!");
-                }
-                
-            }
-        });
- 		JButton cancel =  new JButton("Cancel");
- 		cancel.setBounds(200, 570, 80, 30);
- 		cancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Clear all input fields
-            	addVehicleModel.setValueAt("", 0, 0);
-            	addVehicleModel.setValueAt("", 0, 1);
-            	addVehicleModel.setValueAt("", 0, 2);
-            	addVehicleModel.setValueAt("", 0, 3);
-            	addVehicleModel.setValueAt("", 0, 4);
-            	addVehicleModel.setValueAt("", 0, 5);
-            	addVehicleModel.setValueAt("", 0, 6);
-            	addVehicleModel.setValueAt("", 0, 7);
-            }
-        });
- 		JButton exit =  new JButton("Exit");
- 		exit.setBounds(650, 570, 80, 30);
-        exit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	List<Statistics> statistics = Statistics.populateStatistics(vehicles);
-            	 try (PrintWriter writer = new PrintWriter(new FileWriter("statistics.csv"))) {
-                     // Write the statistics to the file
-                     for (Statistics statistic : statistics) {
-                         writer.printf("%s,%s,%s\n", statistic.getSegmentNumber(), statistic.getTotalWaitingTime(), statistic.getAverageCrossingTime());
-                     }
-                 } catch (IOException ex) {
-                     ex.printStackTrace();
-                 }
-                dispose(); // Close the GUI
-            }
-        });
-         
-         // Adding tables to panels with scroll panes
-         JPanel Panel = new JPanel(new GridLayout(0,1));
-         Panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
-         Panel.setLayout(null);
-         Panel.add(vehicleLabel);
-         Panel.add(vehicleScroll);
-         //Adding Statistics table to panel
-         Panel.add(statisticsLabel);
-         Panel.add(statisticsScroll);
-         //Adding Add vehicle table to panel
-         totalEmissionLabel = new JLabel("");
-         totalEmissionLabel.setBounds(30, 500, 100, 20);
-         Panel.add(totalEmissionLabel);
-         
-         //Adding Action buttons and emission to panel
-         Panel.add(addVehicleLabel);
-         Panel.add(addVehicleScroll);
- 		Panel.add(add);
- 		Panel.add(cancel);
- 		Panel.add(exit);
-         Panel.add(co2_l);
-         Panel.add(co2_unit);
-         Panel.add(emissionField);
-         
- 
- 		
-         List<Statistics> statistics = Statistics.populateStatistics(vehicles);
-         DefaultTableModel statisticsTableModel = createStatisticsTableModel(statistics);
-         statisticsTable.setModel(statisticsTableModel);
-
-         // Adding panels to main frame
-         //this.setLayout(new BorderLayout());
-     
-         this.setTitle("Road Intersection Traffic Similation");
- 		 this.add(Panel, BorderLayout.CENTER);
-         this.setSize(1000, 650);
-         this.setResizable(false);
-         this.setVisible(true);
-         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    
-
-    	} catch (IOException e) {
-			e.printStackTrace();
-		}
-    	
-    	
-
-    	
-    }
-
-	public DefaultTableModel createStatisticsTableModel(List<Statistics> statistics) {
-        // Create the table model with the appropriate column names
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.setColumnIdentifiers(new Object[] {
-                "Segment",
-                "Waiting time",
-                "Waiting length",
-                "Average Crossing time"
-        });
-
-        // Add each Statistics object to the table
-        for (Statistics stats : statistics) {
-            tableModel.addRow(new Object[] {
-                    stats.getSegmentNumber(),
-                    stats.getTotalWaitingTime(),
-                    stats.getTotalWaitingLength(),
-                    stats.getAverageCrossingTime()
-            });
-        }
-
-        return tableModel;
-    }    
-    public void setTotalEmissionLabel(double totalCo2Emission) {
-        totalEmissionLabel.setText("Total Co2 Emission is " + totalCo2Emission);
+        Jframe = new JFrame();
         
-    }
-    public static List<Vehicle> readVehiclesFromCsv(String filename) throws IOException {
-        List<Vehicle> vehicles = new ArrayList<>();
-        try(BufferedReader br = new BufferedReader(new FileReader(filename))){
-            String line;
-            while ((line = br.readLine()) != null) {
-                try {
-                    String[] fields = line.split(",");
-                    String plateNumber = fields[0];
-                    String vehicleType = fields[1];
-                    int crossingTime = Integer.parseInt(fields[2]);
-                    String direction = fields[3];
-                    double waitingLength = Double.parseDouble(fields[4]);
-                    int co2Emission = Integer.parseInt(fields[5]);
-                    String vehicleStatus = fields[6];
-                    String segmentNumber = fields[7];
-                    Vehicle vehicle = new Vehicle(plateNumber, vehicleType, crossingTime, direction, 
-                                                   waitingLength, co2Emission, vehicleStatus, segmentNumber);
-                    vehicles.add(vehicle);
-                } catch (NumberFormatException e) {
-                    // handlig invalid integer or double values
-                    System.err.println("Error: Invalid number format in line: " + line);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    // Handling mising or incorrect number of fields
-                    System.err.println("Error: Invalid number of fields in line: " + line);
-                } catch (Exception e) {
-                    // Handling any other exception
-                    System.err.println("Error: " + e.getMessage());
+        Jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // program to be exited if window is
+                                                                           // closed
+        Jframe.setTitle("Road Intersection Traffic Simulation"); // title of main window
+        Jframe.setSize(1100, 600); // seting the width and height of the main window
+        Jframe.setLocationRelativeTo(null); // position the nframe in the middle of the screen
+        Jframe.setLayout(new BorderLayout()); // initiate layout of nframe
+
+        // Creating vehicle Table
+        String[] veh_tbl_head = { "Vehicle no", "Type", "Segment", "Cross time", "Direction", "Status", "Length" };
+
+        tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(veh_tbl_head);
+        JLabel vehicleLabel = new JLabel("Vehicles", SwingConstants.CENTER);
+		vehicleLabel.setBounds(10, 0, 450, 30);
+        vehicleTable = new JTable();
+        vehicleTable.setModel(tableModel);
+
+        vehicleTable.getTableHeader().setReorderingAllowed(false); // setting coumn reordering order as false
+        vehicleTable.setAutoCreateRowSorter(true); // setting row sorting order as true for the table
+        vehicleTable.setEnabled(false); // Setting the table's data non-editable
+        JScrollPane vehicleScroll = new JScrollPane(vehicleTable);
+        //vehicleScroll.setViewportView();
+        vehicleScroll.setBounds(10, 30, 450, 200);
+
+        //Creating phase table
+        String[] phaseTableHeader = { "Phase", "Duration" };
+        phaseModel = new DefaultTableModel();
+        phaseModel.setColumnIdentifiers(phaseTableHeader);
+        phaseTable = new JTable();
+		JLabel phaseLabel = new JLabel("Statistics", SwingConstants.CENTER);
+		phaseLabel.setBounds(500, 0, 150, 30);
+        phaseTable.setModel(phaseModel);
+        phaseTable.getTableHeader().setReorderingAllowed(false);
+        phaseTable.setEnabled(false);
+        JScrollPane phaseScroll = new JScrollPane(); 
+        phaseScroll.setBounds(500, 30, 150, 200);
+        phaseScroll.setViewportView(phaseTable);
+
+        // 3.Statistics table
+        String[] statsTableHeader = { "Segment", "Waiting time", "Waiting Length",
+                        "Cross time" };
+        statsModel = new DefaultTableModel();
+        statsModel.setColumnIdentifiers(statsTableHeader);
+        statisticsTable = new JTable();
+		JLabel statisticsLabel = new JLabel("Statistics", SwingConstants.CENTER);
+		statisticsLabel.setBounds(600, 0, 350, 30);
+        statisticsTable.setModel(statsModel);
+
+        statisticsTable.getTableHeader().setReorderingAllowed(false);
+        statisticsTable.setEnabled(false);
+        statisticsTable.setAutoCreateRowSorter(true); // enables sorting
+        JScrollPane statisticsScroll = new JScrollPane(); 
+        statisticsScroll.setBounds(700, 30, 350, 100);
+        statisticsScroll.setViewportView(statisticsTable);
+        
+        
+
+        
+        //Creating co2 field
+        JLabel co2_l = new JLabel("CO2:", SwingConstants.CENTER); 
+        co2_l.setBounds(910,220, 50, 30);
+        String tco2 = "0.0";
+        emissionField = new JTextField();
+        emissionField.setText(tco2);
+        emissionField.setEditable(false);
+        emissionField.setBounds(900,250, 50, 30);
+        JLabel co2_unit = new JLabel("kg"); 
+        co2_unit.setBounds(950,250, 50, 30);
+        
+
+
+        // Creating Add vehicle table
+        String[] add_tbl_head = { "Vehicle no", "Type", "Segment", "Crossing Time", "Direction", "Length", "Co2" };
+        Object[][] add_data = { { "23232", "car", "1", "32.9", "L", "12.0", "32.0" } };
+
+        JComboBox<String> segOpt = new JComboBox<String>();
+        segOpt.addItem("1");
+        segOpt.addItem("2");
+        segOpt.addItem("3");
+        segOpt.addItem("4");
+        JComboBox<String> typeOpt = new JComboBox<String>();
+        typeOpt.addItem("Truck");
+        typeOpt.addItem("Car");
+        typeOpt.addItem("Bus");
+        addVehicleTable = new JTable(add_data, add_tbl_head);
+        JLabel addVehicleLabel = new JLabel("Add Vehicles", SwingConstants.CENTER);
+        addVehicleLabel.setBounds(10, 370, 300, 30);
+        TableColumn typeCol = addVehicleTable.getColumnModel().getColumn(1);
+        typeCol.setCellEditor(new DefaultCellEditor(typeOpt));
+        TableColumn segCol = addVehicleTable.getColumnModel().getColumn(2);
+        segCol.setCellEditor(new DefaultCellEditor(segOpt));
+        JScrollPane addVehicleScroll = new JScrollPane(); 
+        addVehicleScroll.setBounds(10, 400, 450, 50);
+        addVehicleScroll.setViewportView(addVehicleTable);
+
+        // Creating Buttons
+        add = new JButton("Add");
+        add.setBounds(50, 500, 80, 30);
+        cancel =  new JButton("Cancel");
+ 		cancel.setBounds(200, 500, 80, 30);
+        exit = new JButton("Exit");
+        exit.setBounds(650, 500, 80, 30);
+ 		
+
+        // Adding all components to Jpanel
+        JPanel jPanel2 = new JPanel(new GridLayout(0,1));
+        jPanel2.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
+        jPanel2.setLayout(null);
+        jPanel2.add(vehicleLabel);
+		jPanel2.add(vehicleScroll);
+		jPanel2.add(phaseLabel);
+		jPanel2.add(phaseScroll);
+		jPanel2.add(statisticsLabel);
+		jPanel2.add(statisticsScroll);
+		jPanel2.add(addVehicleLabel);
+		jPanel2.add(addVehicleScroll);
+		jPanel2.add(co2_l);
+		jPanel2.add(emissionField);
+		jPanel2.add(co2_unit);
+		jPanel2.add(add);
+		jPanel2.add(cancel);
+		jPanel2.add(exit);
+        
+		// Adding panel to Jframe
+        Jframe.add(jPanel2, BorderLayout.CENTER);
+        Jframe.setResizable(false);
+        Jframe.setVisible(true);
+        // Exit button action
+        exit.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                                try {
+                                        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                                        	Vehicle_logs.getInstance().writeLogsToFile("log.txt");
+                                        }));
+                                        FileWriter writer = new FileWriter("statistics.txt");
+                                        writer.write(getContent(vehicleTable.getModel(), phaseTable.getModel(),
+                                                        statisticsTable.getModel(), emissionField.getText()));
+                                        writer.close();
+                                  
+                                        System.exit(0);
+                                } catch (IOException ex) {
+                                        ex.printStackTrace();
+                                }
+                        
                 }
-            }
-        } catch (IOException e) {
-            // Handling file I/O exception
-            System.err.println("Error: Unable to read file: " + filename);
-            throw e;
-        }
-        return vehicles;
+        });
+
+    	
     }
+
+
+
+    /**
+     * Function to get Vehicle Data from vehicle.csv
+     */
+    @SuppressWarnings("unchecked")
+	public void update(Observable obs, Object arg) {
+
+            Queue<Vehicle> upvehicle;
+            Double dumv;
+            if (obs instanceof AddVehicle) {
+                    if (arg instanceof Map) {
+
+                            Map<?, ?> allvehicle = (Map<?, ?>) arg;
+
+                            if (allvehicle.values().iterator().next() instanceof Queue<?>) {
+                                    tableModel.setRowCount(0);
+                                    for (Entry<?, ?> veh : allvehicle.entrySet()) {
+
+                                            upvehicle = (Queue<Vehicle>) veh.getValue();
+
+                                            for (Vehicle vehicle : upvehicle) {
+
+                                                    Object[] rowData = { "L" + vehicle.getVehicle_number(), vehicle.getVehicleType(),
+                                                                    vehicle.getSegmentNumber(),
+                                                                    vehicle.getCrossingTime(),
+                                                                    vehicle.getDirection(),
+                                                                    vehicle.getCrossStatus(),
+                                                                    vehicle.getWaitingLength(),
+                                                                    vehicle.getCo2Emission() };
+                                                    tableModel.addRow(rowData);
+
+                                            }
+                                    }
+                            } else if (allvehicle.values().iterator().next() instanceof List<?>) {
+
+                                    statsModel.setRowCount(0);
+                                    for (Entry<?, ?> stat : allvehicle.entrySet()) {
+                                            List<Double[]> sval = (List<Double[]>) stat.getValue();
+                                            Double[] dd = sval.get(0);
+
+                                            Object[] rowData = { stat.getKey(), dd[0] + " s", dd[1],
+                                                            dd[2] + " s" };
+                                            statsModel.addRow(rowData);
+
+                                    }
+                            }
+
+                    }
+
+                    if (arg instanceof ArrayList) {
+                            dumv = 0.0;
+                            ArrayList<Double[]> inter = (ArrayList<Double[]>) arg;
+                            phaseModel.setRowCount(0);
+                            for (Double[] intersection : inter) {
+                                    double dvl = intersection[1] - dumv;
+                                    Object[] rowData = { intersection[0].intValue(),
+                                                    Double.parseDouble(String.format("%.2f", dvl)) };
+                                    dumv = intersection[1];
+                                    phaseModel.addRow(rowData);
+                            }
+                    }
+
+                    if (arg instanceof Double) {
+
+                            Double inter = (Double) arg;
+                            inter = inter / 1000;
+                            String dd = inter.toString();
+
+                            emissionField.setText(String.format("%.2f", inter));
+                    }
+
+            }
+
+    }
+
+    public void show() {
+            Jframe.setVisible(true);
+    }
+
+//getting report
+    public String getContent(TableModel vehicles, TableModel phases, TableModel statistics, String co2) {
+            String content = "\t\t\tREPORT\n\n\n";
+
+            content += "Number of Vehicles Crossed during Simulation" + "\t:\t" +
+                            get_veh_count(vehicles) + " Vehicles\n\n";
+            content += "\t\t\tStatistics of each Segment\n\t\t\t---------- -- ---- -------\n";
+            content += String.format("\n%s\n", getstat(statistics));
+
+            content += String.format("Average Waiting Time to cross\t:\t%s Seconds\n\n", getavg_wait(statistics));
+            content += String.format("Total CO2 Emmision during the simulation \t\t:\t%s KG\n", co2.toString());
+            return content;
+
+    }
+
+    //Counts for vehicle
+    public String get_veh_count(TableModel mytbl) {
+            int c_veh_count = 0; // Crossed vehicle count
+            for (int i = 0; i < mytbl.getRowCount(); i++) {
+                    if (mytbl.getValueAt(i, 5).toString().equals("crossed")) 
+                    {
+                            c_veh_count += 1;
+                    }
+            }
+            return Integer.toString(c_veh_count);
+    }
+
+    private String getstat(TableModel statistics) {
+            String Content = "Segment\t\t" + "Total Waiting Time\t"
+                            + "Total Waiting length(vehicles)\t"
+                            + "Total Crosstime";
+            Content += "\n*******\t\t" + "******************\t"
+                            + "******************************\t"
+                            + "***************";
+            String seg = null;
+            if (statistics.getRowCount() > 0) {
+                    for (int i = 0; i < statistics.getRowCount(); i++) {
+                            if (statistics.getValueAt(i, 0).equals('S'))
+                                    seg = "South";
+                            else if (statistics.getValueAt(i, 0).equals('E'))
+                                    seg = "East";
+                            else if (statistics.getValueAt(i, 0).equals('N'))
+                                    seg = "North";
+                            else if (statistics.getValueAt(i, 0).equals('W'))
+                                    seg = "West";
+                            Content += String.format("\n%-7s %18s %20s %24s\n", seg,
+                                            statistics.getValueAt(i, 1).toString(),
+                                            statistics.getValueAt(i, 2).toString(),
+                                            statistics.getValueAt(i, 3).toString());
+                    }
+            } else
+                    Content = "\tSimulation did not run long enough to produce statistics\n";
+            return Content;
+    }
+
+    private Object getavg_wait(TableModel statistics) {
+            double val = 0.0;
+            for (int i = 0; i < statistics.getRowCount(); i++) {
+                    val += Double.parseDouble(statistics.getValueAt(i, 1).toString().split(" ")[0]);
+            }
+            val = val / statistics.getRowCount();
+            return val;
+    }
+
+    public JButton getAddButton() {
+            return add;
+    }
+
+
+
+    public String[] getTableinfo() {
+
+            String table_data_0 = GetData(addVehicleTable, 0, 0);
+            String table_data_1 = GetData(addVehicleTable, 0, 1);
+            String table_data_2 = GetData(addVehicleTable, 0, 2);
+            String table_data_3 = GetData(addVehicleTable, 0, 3);
+            String table_data_4 = GetData(addVehicleTable, 0, 4);
+            String table_data_5 = GetData(addVehicleTable, 0, 5);
+            String table_data_6 = GetData(addVehicleTable, 0, 6);
+
+            table_data_0.getClass().equals(String.class);
+
+            String[] sp = new String[] { table_data_0, table_data_1, table_data_2, table_data_3, table_data_4,
+                            table_data_5, table_data_6 };
+            return sp;
+
+    }
+    public String GetData(JTable addVehicleTable, int i, int j) {
+            return String.valueOf(addVehicleTable.getModel().getValueAt(i, j));
+    }
+
+
+
+	public void setTotalEmissionLabel(double totalCo2Emission) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
 
 }
 

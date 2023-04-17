@@ -32,10 +32,11 @@ public class Emission {
         for (int i = 1; i <= vehicles.size(); i++) {
             double totalCo2Emission = 0; 
 	    	for (Vehicle vehicle : vehicles) {
-	             if (vehicle.getSegmentNumber().equals("S" + i)) {    
-	            	totalCo2Emission += vehicle.getCo2Emission();
-	            	System.out.println("how far "+totalCo2Emission);
-	             }
+	    		if (vehicle.getSegmentNumber() == ('S' + i)) {    
+	    		    totalCo2Emission += vehicle.getCo2Emission();
+	    		    System.out.println("how far " + totalCo2Emission);
+	    		}
+
 	        }
 	    	Emission emi = new Emission(i, totalCo2Emission);
             emissionList.add(emi);

@@ -1,0 +1,13 @@
+			ROAD SIMULATION REPORT
+			~~~~ ~~~~~~~~~~ ~~~~~~
+
+Number of Vehicles Crossed during Simulation	:	0 Vehicles
+
+			Statistics of each Segment
+			---------- -- ---- -------
+
+	Simulation did not run long enough to produce statistics
+
+Average Waiting Time to cross	:	NaN Seconds
+
+Total CO2 Emmision during the simulation 		:	0 KG

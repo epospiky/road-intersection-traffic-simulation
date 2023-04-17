@@ -7,8 +7,8 @@ import java.util.Map;
 
 public class Statistics {
     private String segmentNumber;
-    private int totalWaitingTime;
     private double totalWaitingLength;
+    private int totalWaitingTime;
     private int averageCrossingTime;
 
     public Statistics(int i, int totalWaitingTime, double totalWaitingLength, int averageCrossingTime) {
@@ -52,30 +52,29 @@ public class Statistics {
 
     public static List<Statistics> populateStatistics(List<Vehicle> vehicles) {
         List<Statistics> statisticsList = new ArrayList<>();
-        Map<String, Integer> segmentCounts = new HashMap<>(); // segment counts
+        Map<String, Integer> segmentCounts = new HashMap<>();
         
-        // Iterating over the segments to create Statistics object for each segment
+        // looping for statistics in each segment
         for (int i = 1; i <= 4; i++) {
             int totalWaitingTime = 0;
             int averageCrossingTime = 0;
             double totalWaitingLength = 0;
             try {
                 for (Vehicle vehicle : vehicles) {
-                    if (vehicle.getSegmentNumber().equals("S" + i)) {
-                        // Incrementing segment count
-                        String segmentNumber = vehicle.getSegmentNumber();
+                    if (vehicle.getSegmentNumber()== ('S' + i)) {
+                        String segmentNumber = toString(vehicle.getSegmentNumber());
                         segmentCounts.put(segmentNumber, segmentCounts.getOrDefault(segmentNumber, 0) + 1);
 
                         averageCrossingTime += vehicle.getCrossingTime();
                         totalWaitingLength += vehicle.getWaitingLength();
 
-                        if (vehicle.getVehicleStatus().equals("Waiting")) {
+                        if (vehicle.getCrossStatus().equals("waiting")) {
                             totalWaitingTime += vehicle.getCrossingTime();
                         }
                     }
                 }
             } catch (Exception e) {
-                System.out.println("Error in processing vehicles for segment " + i);
+                System.out.println("Error for segment " + i);
                 e.printStackTrace();
             }
 
@@ -87,5 +86,10 @@ public class Statistics {
 
         return statisticsList;
     }
+
+	private static String toString(char segmentNumber2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

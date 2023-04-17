@@ -1,121 +1,75 @@
 package road_traffic_simulation;
-
-
-
 public class Vehicle {
-    private String plateNumber;
-    private String vehicleType;
-    private int crossingTime;
-    private String direction;
-    private double waitingLength;
-    private int co2Emission;
-    private String vehicleStatus;
-    private String segmentNumber;
-    
-    public Vehicle(String plateNumber, String vehicleType, int crossingTime, 
-            String direction, double waitingLength, int co2Emission, 
-            String vehicleStatus, String segmentNumber) throws IllegalArgumentException {
-			 if (plateNumber == null || plateNumber.isEmpty()) {
-			     throw new IllegalArgumentException("Plate number cannot be null or empty");
-			 }
-			 if (vehicleType == null || vehicleType.isEmpty()) {
-			     throw new IllegalArgumentException("Vehicle type cannot be null or empty");
-			 }
-			 if (crossingTime <= 0) {
-			     throw new IllegalArgumentException("Crossing time cannot be negative or zero");
-			 }
-			 if (direction == null || direction.isEmpty()) {
-			     throw new IllegalArgumentException("Direction cannot be null or empty");
-			 }
-			 if (waitingLength < 0) {
-			     throw new IllegalArgumentException("Waiting length cannot be negative");
-			 }
-			 if (co2Emission < 0) {
-			     throw new IllegalArgumentException("CO2 emission cannot be negative");
-			 }
-			 if (vehicleStatus == null || vehicleStatus.isEmpty()) {
-			     throw new IllegalArgumentException("Vehicle status cannot be null or empty");
-			 }
-			 if (segmentNumber == null || segmentNumber.isEmpty()) {
-			     throw new IllegalArgumentException("Segment number cannot be null or empty");
-			 }
-			 
-			 this.plateNumber = plateNumber;
-			 this.vehicleType = vehicleType;
-			 this.crossingTime = crossingTime;
-			 this.direction = direction;
-			 this.waitingLength = waitingLength;
-			 this.co2Emission = co2Emission;
-			 this.vehicleStatus = vehicleStatus;
-			 this.segmentNumber = segmentNumber;
+
+    private String vehicle_type;
+    private int vehicle_number;
+    private char segmentNumber;
+    private double crossing_time;
+    private char direction;
+    private boolean crossed;
+    private double length;
+    private double co2_emission;
+
+
+
+    public Vehicle(int num,String veh_type,  char segment_num, double cross_time, char direct, boolean cross, double leng,
+            double co2) {
+        vehicle_type = veh_type;
+        vehicle_number = num;
+        segmentNumber = segment_num;
+        crossing_time = cross_time;
+        direction = direct;
+        crossed = cross;
+        length = leng;
+        co2_emission = co2;
     }
-    
-    // Getters and setters for all attributes
-    public String getPlateNumber() {
-        return plateNumber;
-    }
-    
-    public void setPlateNumber(String plateNumber) {
-        this.plateNumber = plateNumber;
-    }
-    
+
     public String getVehicleType() {
-        return vehicleType;
+        return vehicle_type;
     }
-    
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
+
+    public int getVehicle_number() {
+        return vehicle_number;
     }
-    
-    public int getCrossingTime() {
-        return crossingTime;
-    }
-    
-    public void setCrossingTime(int crossingTime) {
-        this.crossingTime = crossingTime;
-    }
-    
-    public String getDirection() {
-        return direction;
-    }
-    
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-    
-    public double getWaitingLength() {
-        return waitingLength;
-    }
-    
-    public void setWaitingLength(double waitingLength) {
-        this.waitingLength = waitingLength;
-    }
-    
-    public int getCo2Emission() {
-        return co2Emission;
-    }
-    
-    public void setCo2Emission(int co2Emission) {
-        this.co2Emission = co2Emission;
-    }
-    
-    public String getVehicleStatus() {
-        return vehicleStatus;
-    }
-    
-    public void setVehicleStatus(String vehicleStatus) {
-        this.vehicleStatus = vehicleStatus;
-    }
-    
-    public String getSegmentNumber() {
+
+    public char getSegmentNumber() {
         return segmentNumber;
     }
-    
-    public void setSegmentNumber(String segmentNumber) {
-        this.segmentNumber = segmentNumber;
+
+    public double getCrossingTime() {
+        return crossing_time;
     }
-    
 
-    
+    public char getDirection() {
+        return direction;
+    }
+
+    public String getCrossStatus() {
+        if (crossed == false) {
+            return "waiting";
+        }
+        return "crossed";
+    }
+
+    public boolean isCrossedinB() {
+
+        return crossed;
+    }
+
+    public double getWaitingLength() {
+        return length;
+    }
+
+    public double getCo2Emission() {
+        return co2_emission;
+    }
+
+    public double estimatedEmmision() {
+        return co2_emission * crossing_time + length;
+    }
+
+    public void setCrossStatus(boolean c) {
+        crossed = c;
+    }
+
 }
-
