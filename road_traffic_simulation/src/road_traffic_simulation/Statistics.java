@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Statistics {
+	private int stats;
     private String segmentNumber;
     private double totalWaitingLength;
     private int totalWaitingTime;

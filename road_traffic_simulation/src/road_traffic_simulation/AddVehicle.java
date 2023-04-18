@@ -316,7 +316,7 @@ public class AddVehicle extends Observable implements Runnable {
 
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Unimplemented method 'run'");
+        throw new UnsupportedOperationException("Error for unimplemented 'run'");
     }
 
 }
