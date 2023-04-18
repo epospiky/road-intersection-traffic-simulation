@@ -161,7 +161,9 @@ public class GUI implements Observer  {
         Jframe.add(Jpanel, BorderLayout.CENTER);
         Jframe.setResizable(false);
         Jframe.setVisible(true);
-        // Exit button action
+        
+        
+        // Actionperfomed fro Exit button
         exit.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -259,10 +261,6 @@ public class GUI implements Observer  {
 
     }
 
-    public void show() {
-            Jframe.setVisible(true);
-    }
-
 //getting report
     public String getContent(TableModel vehicles, TableModel phases, TableModel statistics, String co2) {
             String content = "\n\t\t\t\tSTATISTICS REPORT\n\n\n";
@@ -290,8 +288,8 @@ public class GUI implements Observer  {
 
     @SuppressWarnings("unused")
 	private String getstat(TableModel statistics) {
-            String statData = "Segment\t\t" + "Total Waiting Time\t"
-                            + "Total Waiting Length\t"
+            String statData = "Segment\t\t" + "Total Waiting Time\t\t"
+                            + "Total Waiting Length\t\t"
                             + "Total Crossing Time";
             String segme = null;
             if (statistics.getRowCount() > 0) {
@@ -353,7 +351,7 @@ public class GUI implements Observer  {
 
 
 
-    public JButton getAddButton() {
+    public JButton AddVehButton() {
         return add;
     }
 

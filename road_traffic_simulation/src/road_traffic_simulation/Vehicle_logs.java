@@ -7,7 +7,7 @@ package road_traffic_simulation;
 
 	public class Vehicle_logs {
 	    private static Vehicle_logs instance = null;
-	    private ArrayList<String> Entries = new ArrayList<>();
+	    private ArrayList<String> Logs = new ArrayList<>();
 	    private Vehicle_logs() {}
 	    public static synchronized Vehicle_logs getInstance() {
 	        if (instance == null) {
@@ -15,19 +15,17 @@ package road_traffic_simulation;
 	        }
 	        return instance;
 	    }
-
-	    // Adding each log Entries to an ArrayList
-	    public synchronized void addEntry(String log_msg) {
-	        Entries.add(log_msg);
+	    public synchronized void addToLog(String msg) {
+	        Logs.add(msg);
 	    }
 
 	    // creating logs
 	    public void writeLogsToFile(String FileName) {
 	        try (PrintWriter writer = new PrintWriter(new FileWriter(FileName))) {
-	            writer.println("\t\t Log History");
+	            writer.println("\t\t\t\t Log History");
 	            writer.println();
-	            for (String entry : Entries) {
-	                writer.println(entry);
+	            for (String log : Logs) {
+	                writer.println(log);
 	            }
 	        } catch (IOException e) {
 	            System.err.println("Error creating logs: " + e.getMessage());

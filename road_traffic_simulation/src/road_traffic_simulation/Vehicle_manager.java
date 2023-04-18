@@ -2,6 +2,7 @@ package road_traffic_simulation;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Queue;
@@ -19,19 +20,28 @@ public class Vehicle_manager extends Thread {
         // Register the view as an observer of the model
         model.addObserver(view);
 
-        view.getAddButton().addActionListener(new ActionListener() {
+        view.AddVehButton().addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                try {
                     String[] rowData = view.tableData();
                     model.threadAddVehicle(Integer.parseInt(rowData[0]), rowData[1],
                             rowData[2].charAt(0),
                             Double.parseDouble(rowData[3]), rowData[4].charAt(0),
                             Double.parseDouble(rowData[5]),
                             Double.parseDouble(rowData[6]));
-               
+                } catch (NumberFormatException ex) {
+                    // Handling nad exception caused by invalid number format
+                    System.err.println("Invalid number format: " + ex.getMessage());
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    // Handling an exception caused by accessing an invalid array index
+                    System.err.println("Array index out of bounds: " + ex.getMessage());
+                } catch (Exception ex) {
+                    System.err.println("An error occurred: " + ex.getMessage());
+                }
             }
+
         });
 
     }
@@ -45,21 +55,23 @@ public class Vehicle_manager extends Thread {
     }
 
 
-    public void getIntersectionData(String fileName) {
-        model.intersectionData(fileName);
+    public void getIntersectionData(String fileName) throws FileNotFoundException {
+        try {
+            model.intersectionData(fileName);
+        } catch (Exception ex) {
+            System.err.println("An error occurred: " + ex.getMessage());
+        }
     }
 
-    public void displayView() {
-        view.show();
-    }
+
 
     public void threadStart() {
         boolean phase = false;
         t_signal = new Signal("green");
         int t_sig = 0;
         long sig_wait = 0;
-        Queue<Intersection_manager> intersct = model.getIntersection();
-        model.starttime();
+        Queue<Intersection_manager> intersct = model.intersectNumber();
+        model.startExecTime();
 
         while (true) {
             model.random_gen();
@@ -100,7 +112,7 @@ public class Vehicle_manager extends Thread {
                     }
 
                 }
-                double f_time = model.exec_time();
+                double f_time = model.endExecTime();
                 double fac = (double) (f_time / 1000F);
                 model.addvaluePhase(
                         currentsection.getPhases(), fac);
@@ -108,7 +120,7 @@ public class Vehicle_manager extends Thread {
 
                 if (intersct.isEmpty()) {
                     model.intersectionData("Intersection.csv");
-                    intersct = model.getIntersection();
+                    intersct = model.intersectNumber();
                 }
 
             }

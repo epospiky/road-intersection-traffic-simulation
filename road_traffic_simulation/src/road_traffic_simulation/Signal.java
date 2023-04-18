@@ -7,7 +7,7 @@ class Signal {
      Light = light;
  }
  public synchronized void setLight(String light) {
-     Vehicle_logs.getInstance().addEntry(String.format("Signal light has now turned %s", light));
+     Vehicle_logs.getInstance().addToLog(String.format("Signal light is now %s", light));
      Light = light;
      notifyAll();
  }

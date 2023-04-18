@@ -3,11 +3,18 @@
 
 
 
-	No statistics data
+Segment		Total Waiting Time		Total Waiting Length		Total Crossing Time
+S1                21.031 s                16.7m                   21.0 s
 
-Average Waiting Time	:	NaN s
+S2                   0.0 s                 0.0m                    0.0 s
 
-Total Emission 		:	0.0 KG
+S3                   0.0 s                 0.0m                    0.0 s
 
-Total vehicles crossed :	0
+S4                   0.0 s                 0.0m                    0.0 s
+
+Average Waiting Time	:	5.25775 s
+
+Total Emission 		:	0.16 KG
+
+Total vehicles crossed :	2
 

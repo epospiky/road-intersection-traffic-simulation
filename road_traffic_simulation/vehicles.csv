@@ -1,12 +1,10 @@
-Vehicle_no,Type,In_segment,Crossing_time,Direction_to,Vehicle_crossed,Length (in meters),CO2_emission (in gm)
-1000001,Car,1,3,L,FALSE,3.4,5
-1000002,Car,2,3,R,FALSE,3.6,10
-1000003,Car,1,3,L,FALSE,4.4,5
-1000004,Car,3,3,R,FALSE,4.0,5
-1000006,Truck,4,5,L,FALSE,5.3,10
-1000007,Truck,4,5,B,FALSE,5.4,10
-1000008,Truck,1,5,B,FALSE,5.6,10
-1000010,Truck,2,5,L,FALSE,5.5,10
-1000011,Bus,4,4,R,FALSE,12,10
-1000012,Bus,1,4,S,FALSE,13,10
-1000014,Bus,3,4,S,FALSE,13,10
+vehicleNumber,vehicleType,Segment,CrossingTime, Direction,hasCrossed,waitingLength,co2Emission
+2343215,Car,1,3,L,FALSE,4.1,5
+2345732,Car,1,3,L,FALSE,5.3,5
+2356456,Car,3,3,R,FALSE,3.2,5
+9875352,Truck,4,5,B,FALSE,4.0,14
+1256927,Truck,1,5,B,FALSE,7.3,14
+3721463,Truck,2,5,L,FALSE,4.6,14
+2614795,Bus,4,4,R,FALSE,8.3,9
+2451794,Bus,1,4,S,FALSE,15.2,9
+3248198,Bus,3,4,S,FALSE,4.89,9

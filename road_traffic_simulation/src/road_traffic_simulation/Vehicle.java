@@ -1,27 +1,28 @@
 package road_traffic_simulation;
+
 public class Vehicle {
 
-    private String vehicle_type;
     private int vehicle_number;
+    private String vehicle_type;
     private char segmentNumber;
-    private double crossing_time;
+    private double crossingTime;
     private char direction;
-    private boolean crossed;
-    private double length;
-    private double co2_emission;
+    private boolean hasCrossed;
+    private double waitingLenght;
+    private double co2Emission;
 
 
 
-    public Vehicle(int num, String veh_type,  char segment_num, double cross_time, char direct, boolean cross, double leng,
-            double co2) {
+    public Vehicle(int vehicle_num, String veh_type,  char segment_num, double crossing_t, char direct, boolean cross, double waitingLen,
+            double co2_Em) {
+        vehicle_number = vehicle_num;
         vehicle_type = veh_type;
-        vehicle_number = num;
         segmentNumber = segment_num;
-        crossing_time = cross_time;
+        crossingTime = crossing_t;
         direction = direct;
-        crossed = cross;
-        length = leng;
-        co2_emission = co2;
+        hasCrossed = cross;
+        waitingLenght = waitingLen;
+        co2Emission = co2_Em;
     }
 
     public String getVehicleType() {
@@ -37,7 +38,7 @@ public class Vehicle {
     }
 
     public double getCrossingTime() {
-        return crossing_time;
+        return crossingTime;
     }
 
     public char getDirection() {
@@ -45,7 +46,7 @@ public class Vehicle {
     }
 
     public String getCrossStatus() {
-        if (crossed == false) {
+        if (hasCrossed == false) {
             return "Waiting";
         }
         return "Crossed";
@@ -53,23 +54,23 @@ public class Vehicle {
 
     public boolean hasCrossed() {
 
-        return crossed;
+        return hasCrossed;
     }
 
     public double getWaitingLength() {
-        return length;
+        return waitingLenght;
     }
 
     public double getCo2Emission() {
-        return co2_emission;
+        return co2Emission;
     }
 
     public double estimatedEmmision() {
-        return co2_emission * crossing_time + length;
+        return co2Emission * crossingTime + waitingLenght;
     }
 
     public void setCrossStatus(boolean c) {
-        crossed = c;
+        hasCrossed = c;
     }
 
 }
