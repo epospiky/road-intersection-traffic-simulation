@@ -1,21 +1,13 @@
-			REPORT
+
+				STATISTICS REPORT
 
 
-Number of Vehicles Crossed during Simulation	:	0 Vehicles
 
-			Statistics of each Segment
-			---------- -- ---- -------
+	No statistics data
 
-Segment		Total Waiting Time	Total Waiting length(vehicles)	Total Crosstime
-*******		******************	******************************	***************
-null              25.041 s                 26.4                   25.0 s
+Average Waiting Time	:	NaN s
 
-null              38.052 s                  3.6                   13.0 s
+Total Emission 		:	0.0 KG
 
-null                 0.0 s                  0.0                    0.0 s
+Total vehicles crossed :	0
 
-null                 0.0 s                  0.0                    0.0 s
-
-Average Waiting Time to cross	:	15.77325 Seconds
-
-Total CO2 Emmision during the simulation 		:	0.33 KG

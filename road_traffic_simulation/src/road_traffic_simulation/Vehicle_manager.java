@@ -7,13 +7,14 @@ import java.util.Map;
 import java.util.Queue;
 
 public class Vehicle_manager extends Thread {
+	Signal t_signal;
     private AddVehicle model;
     private GUI view;
-    Signal trafficLight;
 
-    public Vehicle_manager(AddVehicle model, GUI view) {
-        this.model = model;
-        this.view = view;
+
+    public Vehicle_manager(AddVehicle Model, GUI View) {
+        model = Model;
+        view = View;
 
         // Register the view as an observer of the model
         model.addObserver(view);
@@ -23,12 +24,12 @@ public class Vehicle_manager extends Thread {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                    String[] vida = view.getTableinfo();
-                    model.addVehicleGUI(Integer.parseInt(vida[0]), vida[1],
-                            vida[2].charAt(0),
-                            Double.parseDouble(vida[3]), vida[4].charAt(0),
-                            Double.parseDouble(vida[5]),
-                            Double.parseDouble(vida[6]));
+                    String[] rowData = view.tableData();
+                    model.threadAddVehicle(Integer.parseInt(rowData[0]), rowData[1],
+                            rowData[2].charAt(0),
+                            Double.parseDouble(rowData[3]), rowData[4].charAt(0),
+                            Double.parseDouble(rowData[5]),
+                            Double.parseDouble(rowData[6]));
                
             }
         });
@@ -37,79 +38,77 @@ public class Vehicle_manager extends Thread {
 
     public void loadData(String fileName) throws Exception {
         try {
-            model.loadDataFromCSV(fileName);
+            model.loadCSV(fileName);
         } catch (IOException e) {
-            System.err.println("Error loading data from CSV file: " + e.getMessage());
+            System.err.println("Error loading data: " + e.getMessage());
         }
     }
 
 
-    public void loadDataInter(String fileName) {
-        model.Loaddataintersection(fileName);
+    public void getIntersectionData(String fileName) {
+        model.intersectionData(fileName);
     }
 
-    public void showView() {
+    public void displayView() {
         view.show();
     }
 
-    public void threadrun() {
-        boolean newphase = false;
-        Vehicle_logs.getInstance().addEntry("\tSimulation Started");
-        // Initial state of traffic light is set to GREEN
-        trafficLight = new Signal("green");
-        int sigtest = 0;
-        long waiting = 0;
-        Queue<Intersection_manager> intersection = model.getIntersection();
+    public void threadStart() {
+        boolean phase = false;
+        t_signal = new Signal("green");
+        int t_sig = 0;
+        long sig_wait = 0;
+        Queue<Intersection_manager> intersct = model.getIntersection();
         model.starttime();
 
         while (true) {
-            model.randomGeneration();
-            model.randomGeneration();
-            model.randomGeneration();
-            Intersection_manager currentsection = intersection.poll();
-            Map<Character, Queue<Vehicle>> allvehicle = model.getVehicleQueue();
-            Queue<Vehicle> tempveh = allvehicle.get(currentsection.getSegment_in());
+            model.random_gen();
+            model.random_gen();
+            model.random_gen();
+            Intersection_manager currentsection = intersct.poll();
+            Map<Character, Queue<Vehicle>> vehicls = model.getVehicleQueue();
+            Queue<Vehicle> t_vehichle = vehicls.get(currentsection.getSegment());
             synchronized (this) {
-                for (Vehicle vc : tempveh) {
+                for (Vehicle vehc : t_vehichle) {
 
-                    if (!vc.isCrossedinB()) {
-                        if (sigtest % 4 == 0) {
-                            trafficLight.setState("red");
+                    if (!vehc.hasCrossed()) {
+                        if (t_sig % 4 == 0) {
+                            t_signal.setLight("red");
                         }
 
-                        waiting = (long) vc.getCrossingTime() * 1000;
-                        if (trafficLight.getLight().equals("red")) {
-                            waiting += 10000;
+                        sig_wait = (long) vehc.getCrossingTime() * 1000;
+                        if (t_signal.getLight().equals("red")) {
+                            sig_wait += 10000;
                         }
-                        if (trafficLight.getLight().equals("red")) {
-                            trafficLight.setState("green");
+                        if (t_signal.getLight().equals("red")) {
+                            t_signal.setLight("green");
                         }
-                        model.startThread(vc, trafficLight, currentsection, waiting, newphase);
+                        model.startThread(vehc, t_signal, currentsection, sig_wait, phase);
 
                         try {
-                            wait(waiting); // wait until the thread is finished
+                            wait(sig_wait); 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        model.statcal(vc, currentsection, waiting);
-                        model.co2total(vc, currentsection, waiting);
+                        model.calStatistics(vehc, currentsection, sig_wait);
+                        model.co2total(vehc, currentsection, sig_wait);
 
-                        sigtest++;
+                        t_sig++;
                     } else {
 
                         continue;
                     }
 
                 }
-                double elapsedTime = model.elapsedtime();
-                double fac = (double) (elapsedTime / 1000F);
+                double f_time = model.exec_time();
+                double fac = (double) (f_time / 1000F);
                 model.addvaluePhase(
                         currentsection.getPhases(), fac);
-                model.randomGeneration();
+                model.random_gen();
 
-                if (intersection.isEmpty()) {
-                    model.Loaddataintersection("Intersection.csv");
-                    intersection = model.getIntersection();
+                if (intersct.isEmpty()) {
+                    model.intersectionData("Intersection.csv");
+                    intersct = model.getIntersection();
                 }
 
             }

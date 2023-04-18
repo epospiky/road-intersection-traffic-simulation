@@ -10,69 +10,51 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AddVehicle extends Observable implements Runnable {
     private Map<Character, Queue<Vehicle>> allvehicle;
     private Queue<Intersection_manager> intersection;
-    private Queue<Vehicle> vehicleEast;
-    private Queue<Vehicle> vehicleWest;
-    private Queue<Vehicle> vehicleNorth;
+    private Queue<Vehicle> segment1;
+    private Queue<Vehicle> segment2;
+    private Queue<Vehicle> segment3;
     private ArrayList<Double[]> phases;
-    int hh = 0, pl = 0, dblin = 0;
-    Double totalemmsion;
-    private Queue<Vehicle> vehicleSouth;
-    Thread myThread;
+    int hh = 0, veh_no = 0, dblin = 0;
+    Double totalCo2Emission;
+    private Queue<Vehicle> segment4;
+    Thread mainThread;
     long startTime, elptime;
     boolean cont = true;
-    Map<Character, List<Double[]>> segstat;
+    Map<Character, List<Double[]>> segmentStat;
 
     Double crossingTime, waitingTime, waitingLength, totalCo2;
-    List<Double[]> dummystat = new ArrayList<>();
+    List<Double[]> initStatData = new ArrayList<>();
     private static final DecimalFormat decon = new DecimalFormat("0.00");
 
-    public AddVehicle() {
-        vehicleEast = new LinkedList<>();
-        vehicleWest = new LinkedList<>();
-        vehicleNorth = new LinkedList<>();
-        vehicleSouth = new LinkedList<>();
-        allvehicle = new HashMap<>();
-        intersection = new LinkedList<>();
-        phases = new ArrayList<>();
-        Double[] arrayd = { 0.0, 0.0, 0.0 };
-        dummystat.add(arrayd);
-        dummystat.set(0, arrayd);
-        segstat = new HashMap<>();
-        segstat.put('1', dummystat);
-        segstat.put('2', dummystat);
-        segstat.put('3', dummystat);
-        segstat.put('4', dummystat);
-        totalemmsion = 0.0;
 
-    }
 
-    // Reading vehicle csv file and adding it to stack
-    public void loadDataFromCSV(String filename) throws Exception {
+    // Reading and adding vehicle
+    public void loadCSV(String filename) throws Exception {
 
             try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
                 String line = reader.readLine(); // Skip header line
                 while ((line = reader.readLine()) != null) {
-                    String[] temp = line.split(",");
-                    if (temp[2].charAt(0) == '1' || temp[2].charAt(0) == '2' || temp[2].charAt(0) == '3'
-                            || temp[2].charAt(0) == '4') {
-                        if (temp[4].charAt(0) == 'S' || temp[4].charAt(0) == 'L'
-                                || temp[4].charAt(0) == 'R'
-                                || temp[4].charAt(0) == 'B') {
-                            Vehicle vhi = new Vehicle(Integer.parseInt(temp[0]), temp[1], temp[2].charAt(0),
-                                    Double.parseDouble(temp[3]), temp[4].charAt(0), Boolean.parseBoolean(temp[5]),
-                                    Double.parseDouble(temp[6]), Double.parseDouble(temp[7]));
-                            if (temp[2].equals("1")) {
+                    String[] interData = line.split(",");
+                    if (interData[2].charAt(0) == '1' || interData[2].charAt(0) == '2' || interData[2].charAt(0) == '3'
+                            || interData[2].charAt(0) == '4') {
+                        if (interData[4].charAt(0) == 'S' || interData[4].charAt(0) == 'L'
+                                || interData[4].charAt(0) == 'R'
+                                || interData[4].charAt(0) == 'B') {
+                            Vehicle newVehicle = new Vehicle(Integer.parseInt(interData[0]), interData[1], interData[2].charAt(0),
+                                    Double.parseDouble(interData[3]), interData[4].charAt(0), Boolean.parseBoolean(interData[5]),
+                                    Double.parseDouble(interData[6]), Double.parseDouble(interData[7]));
+                            if (interData[2].equals("1")) {
 
-                                vehicleEast.add(vhi);
-                            } else if (temp[2].equals("2")) {
+                                segment1.add(newVehicle);
+                            } else if (interData[2].equals("2")) {
 
-                                vehicleWest.add(vhi);
-                            } else if (temp[2].equals("3")) {
+                                segment2.add(newVehicle);
+                            } else if (interData[2].equals("3")) {
 
-                                vehicleNorth.add(vhi);
-                            } else if (temp[2].equals("4")) {
+                                segment3.add(newVehicle);
+                            } else if (interData[2].equals("4")) {
 
-                                vehicleSouth.add(vhi);
+                                segment4.add(newVehicle);
                             }
                         } 
                     } 
@@ -86,34 +68,54 @@ public class AddVehicle extends Observable implements Runnable {
 
         
     }
+    public AddVehicle() {
+        segment1 = new LinkedList<>();
+        segment2 = new LinkedList<>();
+        segment3 = new LinkedList<>();
+        segment4 = new LinkedList<>();
+        allvehicle = new HashMap<>();
+        intersection = new LinkedList<>();
+        phases = new ArrayList<>();
+        Double[] arrayd = { 0.0, 0.0, 0.0 };
+        initStatData.add(arrayd);
+        initStatData.set(0, arrayd);
+        segmentStat = new HashMap<>();
+        segmentStat.put('1', initStatData);
+        segmentStat.put('2', initStatData);
+        segmentStat.put('3', initStatData);
+        segmentStat.put('4', initStatData);
+        totalCo2Emission = 0.0;
 
-    // Initializing and adding vehicle class from the data obtained from gui
-    public void addVehicleGUI( int num, String typ, char in_s, double cross_time, char direct_to, double leng,
+    }
+
+    public void threadAddVehicle( int num, String veh_type, char seg_no, double cross_time, char drection, double leng,
             double co2) {
 
-        if (in_s == '1' || in_s == '2' || in_s == '3' || in_s == '4') {
-            if (direct_to == 'L' || direct_to == 'R'
-                    || direct_to == 'B' || direct_to == 'S') {
-                Vehicle fc = new Vehicle( num, typ, in_s, cross_time, direct_to, false, leng, co2);
+        if (seg_no == '1' || seg_no == '2' || seg_no == '3' || seg_no == '4') {
+        	try {
+        		if (drection == 'L' || drection == 'R'
+        		|| drection == 'B' || drection == 'S') {
+        		Vehicle fc = new Vehicle( num, veh_type, seg_no, cross_time, drection, false, leng, co2);
+        	    if (seg_no == '1') {
+        	        segment1.add(fc);
 
-                if (in_s == '1') {
-                    vehicleEast.add(fc);
+        	    } else if (seg_no == '2') {
 
-                } else if (in_s == '2') {
+        	        segment2.add(fc);
 
-                    vehicleWest.add(fc);
+        	    } else if (seg_no == '3') {
 
-                } else if (in_s == '3') {
+        	        segment3.add(fc);
 
-                    vehicleNorth.add(fc);
+        	    } else if (seg_no == '4') {
 
-                } else if (in_s == '4') {
+        	        segment4.add(fc);
 
-                    vehicleSouth.add(fc);
-
-                }
-
-            } 
+        	    }
+        	}
+        	} catch (Exception e) {
+        		System.err.println("An error occurred: " + e.getMessage());
+        		}
         }
         Vehicle_logs.getInstance().addEntry(String.format("Vehicle %d has been added to the segment", num));
         Change(allvehicle);
@@ -123,10 +125,10 @@ public class AddVehicle extends Observable implements Runnable {
     // returning all vehicles data
     public Map<Character, Queue<Vehicle>> getVehicleQueue(){
 
-        allvehicle.put('1', vehicleEast);
-        allvehicle.put('2', vehicleWest);
-        allvehicle.put('3', vehicleNorth);
-        allvehicle.put('4', vehicleSouth);
+        allvehicle.put('1', segment1);
+        allvehicle.put('2', segment2);
+        allvehicle.put('3', segment3);
+        allvehicle.put('4', segment4);
 
         return allvehicle;
     }
@@ -137,7 +139,7 @@ public class AddVehicle extends Observable implements Runnable {
     }
 
     // Reading intersection csv file and adding it to stack
-    public void Loaddataintersection(String filename) {
+    public void intersectionData(String filename) {
         String inter = "";
         int i = 0;
         try {
@@ -147,10 +149,10 @@ public class AddVehicle extends Observable implements Runnable {
                     i++;
                     continue;
                 }
-                String[] temp = inter.split(",");
-                Intersection_manager intersection1 = new Intersection_manager(Integer.parseInt(temp[0]), Integer.parseInt(temp[1]),
-                        temp[2].charAt(0),
-                        temp[3].charAt(0), temp[4].charAt(0));
+                String[] interData = inter.split(",");
+                Intersection_manager intersection1 = new Intersection_manager(Integer.parseInt(interData[0]), Integer.parseInt(interData[1]),
+                        interData[2].charAt(0),
+                        interData[3].charAt(0), interData[4].charAt(0));
                 intersection.add(intersection1);
             }
             bfr.close();
@@ -159,26 +161,26 @@ public class AddVehicle extends Observable implements Runnable {
         }
     }
 
-    // calculatiing emmision
+    //Co22 Emission
     public double calCo2() {
         totalCo2 = 0.0;
-        for (Vehicle vh : vehicleEast) {
+        for (Vehicle vh : segment1) {
             totalCo2 += vh.getCrossingTime();
         }
-        for (Vehicle vh : vehicleWest) {
+        for (Vehicle vh : segment2) {
             totalCo2 += vh.getCrossingTime();
         }
-        for (Vehicle vh : vehicleNorth) {
+        for (Vehicle vh : segment3) {
             totalCo2 += vh.getCrossingTime();
         }
-        for (Vehicle vh : vehicleSouth) {
+        for (Vehicle vh : segment4) {
             totalCo2 += vh.getCrossingTime();
         }
 
         return totalCo2;
     }
 
-    public void segNill() {
+    public void initVal() {
         crossingTime = 0.0;
         waitingLength = 0.0;
         waitingTime = 0.0;
@@ -189,7 +191,7 @@ public class AddVehicle extends Observable implements Runnable {
         startTime = System.currentTimeMillis();
     }
 
-    public long elapsedtime() {
+    public long exec_time() {
         elptime = System.currentTimeMillis() - startTime;
         return elptime;
     }
@@ -201,99 +203,96 @@ public class AddVehicle extends Observable implements Runnable {
         Change(phases);
     }
 
-    // random creation of vehicle instances
-    public void randomGeneration(){
+    // generating vehicles
+    public void random_gen(){
 
         String[] typearray = { "Bus", "Car", "Truck" };
-        // Used ThreadLocalRandom class inorder to make it thread-safe while generating
-        // Random number values
-        // rnd variable for generating random int values
-        int rnd = ThreadLocalRandom.current().nextInt(typearray.length);
-        String type = typearray[rnd];
-
-        int plateno = 2000000 + pl++;
+        int randomValue = ThreadLocalRandom.current().nextInt(typearray.length);
+        String type = typearray[randomValue];
+        Random randomGen = new Random();
+        int vehNumber = 1000000 + randomGen.nextInt(9000000) + veh_no++;
         char[] segmentarray = { '1', '2', '3', '4' };
-        rnd = ThreadLocalRandom.current().nextInt(segmentarray.length);
-        char seg = segmentarray[rnd];
-        double crossigntime = ThreadLocalRandom.current().nextDouble(10, 25);
-        crossigntime = Double.parseDouble(decon.format(crossigntime));
-        while (seg == segmentarray[rnd]) {
-            rnd = ThreadLocalRandom.current().nextInt(segmentarray.length);
+        randomValue = ThreadLocalRandom.current().nextInt(segmentarray.length);
+        char segmt = segmentarray[randomValue];
+        double crosingTime = ThreadLocalRandom.current().nextDouble(10, 25);
+        crosingTime = Double.parseDouble(decon.format(crosingTime));
+        while (segmt == segmentarray[randomValue]) {
+            randomValue = ThreadLocalRandom.current().nextInt(segmentarray.length);
         }
-        char segto = segmentarray[rnd];
-        double waitlen = ThreadLocalRandom.current().nextDouble(10, 30);
-        waitlen = Double.parseDouble(decon.format(waitlen));
-        double co2eem = ThreadLocalRandom.current().nextDouble(5, 34);
-        co2eem = Double.parseDouble(decon.format(co2eem));
-        Vehicle_logs.getInstance().addEntry(String.format("New vehile %d has been generated", plateno));
-        addVehicleGUI( plateno, type, seg, crossigntime, segto, waitlen, co2eem);
+        char[] dirarray = { 'L', 'R', 'S', 'B' };
+        randomValue = ThreadLocalRandom.current().nextInt(dirarray.length);
+        char dir = dirarray[randomValue];
+        double waitingLength = ThreadLocalRandom.current().nextDouble(10, 30);
+        waitingLength = Double.parseDouble(decon.format(waitingLength));
+        double co2Emssion = ThreadLocalRandom.current().nextDouble(5, 34);
+        co2Emssion = Double.parseDouble(decon.format(co2Emssion));
+        Vehicle_logs.getInstance().addEntry(String.format("New vehicle %d has been generated", vehNumber));
+        threadAddVehicle( vehNumber, type, segmt, crosingTime, dir, waitingLength, co2Emssion);
 
     }
 
-    // stat calculations
-    public void statcal(Vehicle curveh, Intersection_manager cursection, long waiting) {
-        List<Double[]> dummy = segstat.get(cursection.getSegment_in());
-        Double[] vbv = dummy.get(0);
+    // 
+    public void calStatistics(Vehicle initVehicle, Intersection_manager pres_section, long waiting) {
+        List<Double[]> stat_data = segmentStat.get(pres_section.getSegment());
+        Double[] vbv = stat_data.get(0);
 
         double wl = vbv[1];
         double ct = vbv[2];
-        double elp = elapsedtime();
+        double elp = exec_time();
         elp = (double) (elp / 1000F);
-        Double[] arrayd = { elp, wl + curveh.getWaitingLength(), ct + waiting / 1000 };
-        List<Double[]> statdum = new ArrayList<>();
-        statdum.add(arrayd);
-        statdum.set(0, arrayd);
-        segstat.put(cursection.getSegment_in(), statdum);
-        Change(segstat);
+        Double[] arrayd = { elp, wl + initVehicle.getWaitingLength(), ct + waiting / 1000 };
+        List<Double[]> stats_data = new ArrayList<>();
+        stats_data.add(arrayd);
+        stats_data.set(0, arrayd);
+        segmentStat.put(pres_section.getSegment(), stats_data);
+        Change(segmentStat);
     }
 
-    public void co2total(Vehicle curveh, Intersection_manager cursection, long waiting) {
-        double totlwait = elapsedtime();
-        double emmision = curveh.getCo2Emission();
-        String type = curveh.getVehicleType();
-        double typ = 1.0;
-        totlwait = (double) (totlwait / 1000F);
+    public void co2total(Vehicle initVehicle, Intersection_manager pres_section, long waiting) {
+        double totalWait_L = exec_time();
+        double co2Emm = initVehicle.getCo2Emission();
+        String type = initVehicle.getVehicleType();
+        double veh_type = 1.0;
+        totalWait_L = (double) (totalWait_L / 1000F);
 
         if (type.equals("Car")) {
-            typ = 1.8;
+            veh_type = 1.8;
         }
         else if(type.equals("Bus")) {
-        	typ = 2.2;
+        	veh_type = 2.2;
         } 
         else if (type.equals("Truck")) {
-            typ = 2.9;
+            veh_type = 2.9;
         }
-        totalemmsion += ((waiting / 1000) * emmision) + (totlwait / emmision) * typ;
-        Change(totalemmsion);
+        totalCo2Emission += ((waiting / 1000) * co2Emm) + (totalWait_L / co2Emm) * veh_type;
+        Change(totalCo2Emission);
     }
 
-    // threading
-    public void startThread(Vehicle curveh, Signal trafficLight, Intersection_manager cursection, long waiting,
+    // Beginning of threading
+    public void startThread(Vehicle initVehicle, Signal t_signal, Intersection_manager pres_section, long waiting,
             boolean newphase) {
 
-        myThread = new Thread(new Runnable() {
+        mainThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                // Do something with the parameter passed in
-
                 long elapsedTime;
 
                 synchronized (this) {
 
-                    if (cursection.getDirection_1() == curveh.getDirection()
-                            || cursection.getDirection_2() == curveh.getDirection()) {
+                    if (pres_section.getCurrentPos() == initVehicle.getDirection()
+                            || pres_section.getNextDir() == initVehicle.getDirection()) {
 
-                        if (trafficLight.getLight().equals("green")) {
+                        if (t_signal.getLight().equals("green")) {
 
                             try {
-                                wait(waiting); // wait until the thread is finished
+                                wait(waiting);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
 
                         } else {
                             try {
-                                wait(waiting); // wait until the thread is finished
+                                wait(waiting);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -303,9 +302,9 @@ public class AddVehicle extends Observable implements Runnable {
                         elapsedTime = System.currentTimeMillis() - startTime;
                         double elp = (double) (elapsedTime / 1000F);
 
-                        curveh.setCrossStatus(true);
+                        initVehicle.setCrossStatus(true);
                         Vehicle_logs.getInstance().addEntry(
-                                String.format("Vehicle %d has crossed the intersection", curveh.getVehicle_number()));
+                                String.format("Vehicle %d has crossed the intersection", initVehicle.getVehicle_number()));
                         Change(allvehicle);
 
                     }
@@ -314,7 +313,7 @@ public class AddVehicle extends Observable implements Runnable {
             }
         });
 
-        myThread.start();
+        mainThread.start();
 
     }
 

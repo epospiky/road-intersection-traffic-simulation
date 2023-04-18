@@ -3,16 +3,16 @@ package road_traffic_simulation;
 public class Intersection_manager {
 	    private int phases;
 	    private int duration;
-	    private char segment_in;
-	    private char direction_1;
-	    private char direction_2;
+	    private char curSegment;
+	    private char currentPos;
+	    private char nextDir;
 
-	    public Intersection_manager(int ph, int dur, char seg, char d1, char d2) {
-	        phases = ph;
+	    public Intersection_manager(int phase, int dur, char segmnt, char currentPos, char nextDir) {
+	        phases = phase;
 	        duration = dur;
-	        segment_in = seg;
-	        direction_1 = d1;
-	        direction_2 = d2;
+	        curSegment = segmnt;
+	        this.currentPos = currentPos;
+	        this.nextDir = nextDir;
 	    }
 
 	    public int getPhases() {
@@ -23,20 +23,20 @@ public class Intersection_manager {
 	        return duration;
 	    }
 
-	    public char getSegment_in() {
-	        return segment_in;
+	    public char getSegment() {
+	        return curSegment;
 	    }
 
-	    public char getDirection_1() {
-	        return direction_1;
+	    public char getCurrentPos() {
+	        return currentPos;
 	    }
 
-	    public char getDirection_2() {
-	        return direction_2;
+	    public char getNextDir() {
+	        return nextDir;
 	    }
 
 	    public boolean crossPossible(char dto, char cfm) {
-	        if (dto == segment_in && direction_1 == cfm || direction_2 == cfm) {
+	        if (dto == curSegment && currentPos == cfm || nextDir == cfm) {
 	            return true;
 	        }
 

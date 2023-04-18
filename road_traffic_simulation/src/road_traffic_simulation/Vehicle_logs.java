@@ -8,12 +8,9 @@ package road_traffic_simulation;
 	public class Vehicle_logs {
 	    private static Vehicle_logs instance = null;
 	    private ArrayList<String> Entries = new ArrayList<>();
-
-	    // Checks and create class instance if instance doesn't already exists
+	    private Vehicle_logs() {}
 	    public static synchronized Vehicle_logs getInstance() {
-	        // Checking whether the instance exists already
 	        if (instance == null) {
-	            // Intializing instance if doesn't exists
 	            instance = new Vehicle_logs();
 	        }
 	        return instance;
@@ -32,7 +29,6 @@ package road_traffic_simulation;
 	            for (String entry : Entries) {
 	                writer.println(entry);
 	            }
-	            writer.println("\tEnd of Simulation");
 	        } catch (IOException e) {
 	            System.err.println("Error creating logs: " + e.getMessage());
 	        }

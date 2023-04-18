@@ -12,7 +12,7 @@ public class Vehicle {
 
 
 
-    public Vehicle(int num,String veh_type,  char segment_num, double cross_time, char direct, boolean cross, double leng,
+    public Vehicle(int num, String veh_type,  char segment_num, double cross_time, char direct, boolean cross, double leng,
             double co2) {
         vehicle_type = veh_type;
         vehicle_number = num;
@@ -46,12 +46,12 @@ public class Vehicle {
 
     public String getCrossStatus() {
         if (crossed == false) {
-            return "waiting";
+            return "Waiting";
         }
-        return "crossed";
+        return "Crossed";
     }
 
-    public boolean isCrossedinB() {
+    public boolean hasCrossed() {
 
         return crossed;
     }

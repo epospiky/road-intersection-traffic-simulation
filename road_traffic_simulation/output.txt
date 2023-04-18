@@ -1,0 +1,10 @@
+		 Log History
+
+New vehicle 2952625 has been generated
+Vehicle 2952625 has been added to the segment
+New vehicle 5187698 has been generated
+Vehicle 5187698 has been added to the segment
+New vehicle 9844815 has been generated
+Vehicle 9844815 has been added to the segment
+Signal light has now turned red
+Signal light has now turned green
